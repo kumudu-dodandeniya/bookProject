@@ -58,6 +58,7 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
                 //.into(holder.img);
         Picasso.get().load(model.getBurl()).into(holder.img);
 
+//Update book item
 
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -65,7 +66,7 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
                 final DialogPlus dialogPlus = DialogPlus.newDialog(holder.img.getContext())
                         .setContentHolder(new ViewHolder(R.layout.update_popup))
                         .setExpanded(true, 1200).create();
-                //dialogPlus.show();
+
 
                 View view1 = dialogPlus.getHolderView();
 
@@ -73,6 +74,8 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
                 EditText description = (EditText) view1.findViewById(R.id.txtDescription);
                 EditText price = (EditText) view1.findViewById(R.id.txtPrice);
                 EditText burl = (EditText) view1.findViewById(R.id.txtImageUrl);
+
+                Button btnUpdate = view1.findViewById(R.id.btnUpdate);
 
 
                 name.setText(model.getName());
@@ -83,8 +86,61 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
 
 
 
+                btnUpdate.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Map<String,Object> map = new HashMap<>();
+                        map.put("name", name.getText().toString());
+                        map.put("description", description.getText().toString());
+                        map.put("price", price.getText().toString());
+                        map.put("burl", burl.getText().toString());
+
+                        FirebaseDatabase.getInstance().getReference().child("book").child(getRef(position).getKey()).updateChildren(map)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Toast.makeText(holder.name.getContext(),"Data Updated Successfully", Toast.LENGTH_SHORT).show();
+                                        dialogPlus.dismiss();
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull @NotNull Exception e) {
+                                        Toast.makeText(holder.name.getContext(),"Error While Updating..", Toast.LENGTH_SHORT).show();
+                                        dialogPlus.dismiss();
+                                    }
+                                });
+                    }
+                });
             }
         });
+
+//Delete book item
+
+            holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(holder.name.getContext());
+                    builder.setTitle("Are you Sure");
+                    builder.setMessage("Deleted data can't be Undo..");
+
+                    builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            FirebaseDatabase.getInstance().getReference().child("book")
+                                    .child(getRef(position).getKey()).removeValue();
+                        }
+                    });
+
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            Toast.makeText(holder.name.getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    builder.show();
+                }
+            });
     }
                 @NonNull
                 @NotNull
