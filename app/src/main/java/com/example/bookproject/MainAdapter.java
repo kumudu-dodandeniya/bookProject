@@ -1,5 +1,6 @@
 package com.example.bookproject;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.jar.Attributes;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -59,121 +61,62 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
 
         holder.btnEdit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick(View view) {
                 final DialogPlus dialogPlus = DialogPlus.newDialog(holder.img.getContext())
                         .setContentHolder(new ViewHolder(R.layout.update_popup))
-                        .setExpanded(true,1200).create();
+                        .setExpanded(true, 1200).create();
                 //dialogPlus.show();
 
-                View view = dialogPlus.getHeaderView();
+                View view1 = dialogPlus.getHolderView();
 
-                EditText name = view.findViewById(R.id.txtName);
-                EditText description = view.findViewById(R.id.txtDescription);
-                EditText price = view.findViewById(R.id.txtPrice);
-                EditText burl = view.findViewById(R.id.txtImageUrl);
+                EditText name = (EditText) view1.findViewById(R.id.Name1);
+                EditText description = (EditText) view1.findViewById(R.id.txtDescription);
+                EditText price = (EditText) view1.findViewById(R.id.txtPrice);
+                EditText burl = (EditText) view1.findViewById(R.id.txtImageUrl);
 
-                Button btnUpdate = view.findViewById(R.id.btnUpdate);
 
                 name.setText(model.getName());
                 description.setText(model.getDescription());
                 price.setText(model.getPrice());
                 burl.setText(model.getBurl());
-
                 dialogPlus.show();
 
-                btnUpdate.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Map<String,Object> map = new HashMap<>();
-                         map.put("name", name.getText().toString());
-                        map.put("description", description.getText().toString());
-                        map.put("price", price.getText().toString());
-                        map.put("burl", burl.getText().toString());
 
-                        FirebaseDatabase.getInstance().getReference().child("book").child(getRef(position).getKey()).updateChildren(map)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Toast.makeText(holder.name.getContext(),"Data Updated Successfully", Toast.LENGTH_SHORT).show();
-                                        dialogPlus.dismiss();
-
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull @NotNull Exception e) {
-                                Toast.makeText(holder.name.getContext(),"Error While Updating..", Toast.LENGTH_SHORT).show();
-                                dialogPlus.dismiss();
-
-                            }
-                        });
-
-                    }
-                });
 
             }
         });
+    }
+                @NonNull
+                @NotNull
+                @Override
+                public myViewHolder onCreateViewHolder (@NonNull @NotNull ViewGroup parent,
+                int viewType){
+                    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_item, parent, false);
 
-        holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(holder.name.getContext());
-                builder.setTitle("Are you Sure");
-                builder.setMessage("Deleted data can't be Undo..");
+                    return new myViewHolder(view);
+                }
 
-                builder.setPositiveButton("Delete", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        FirebaseDatabase.getInstance().getReference().child("book")
-                                .child(getRef(position).getKey()).removeValue();
+                class myViewHolder extends RecyclerView.ViewHolder {
+
+                    ImageView img;
+                    TextView name, description, price;
+
+                    Button btnEdit, btnDelete;
+
+                    public myViewHolder(@NonNull @NotNull View itemView) {
+                        super(itemView);
+
+                        img = (ImageView) itemView.findViewById(R.id.img1);
+                        name = (TextView) itemView.findViewById(R.id.nametext);
+                        description = (TextView) itemView.findViewById(R.id.descriptiontext);
+                        price = (TextView) itemView.findViewById(R.id.pricetext);
+
+                        btnEdit = (Button) itemView.findViewById(R.id.btnEdit);
+                        btnDelete = (Button) itemView.findViewById(R.id.btnDelete);
 
                     }
-                });
-
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(holder.name.getContext(), "Cancelled", Toast.LENGTH_SHORT).show();
-                    }
-                });
-                builder.show();
-            }
-        });
 
 
-
-
-    }
-
-    @NonNull
-    @NotNull
-    @Override
-    public myViewHolder onCreateViewHolder(@NonNull @NotNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.main_item,parent,false);
-
-        return new myViewHolder(view);
-    }
-
-    class myViewHolder extends RecyclerView.ViewHolder{
-
-        ImageView img;
-        TextView name,description,price;
-
-        Button btnEdit,btnDelete;
-
-        public myViewHolder(@NonNull @NotNull View itemView) {
-            super(itemView);
-
-            img = (ImageView)itemView.findViewById(R.id.img1);
-            name = (TextView) itemView.findViewById(R.id.nametext);
-            description = (TextView) itemView.findViewById(R.id.descriptiontext);
-            price = (TextView) itemView.findViewById(R.id.pricetext);
-
-            btnEdit = (Button)itemView.findViewById(R.id.btnEdit);
-            btnDelete = (Button)itemView.findViewById(R.id.btnDelete);
+                }
 
         }
-
-
-
-    }
-}
