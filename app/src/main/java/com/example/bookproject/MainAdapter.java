@@ -46,6 +46,7 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
         super(options);
     }
 
+    // Function to bind the view in Card view with data in model class
     @Override
     protected void onBindViewHolder(@NonNull @NotNull myViewHolder holder, final int position, @NonNull @NotNull MainModel model) {
 
@@ -53,9 +54,6 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
         holder.description.setText(model.getDescription());
         holder.price.setText(model.getPrice());
 
-      //  Glide.with(holder.img.getContext()).load(model.getBurl()).placeholder(R.drawable.common_google_signin_btn_icon_dark)
-              //  .circleCrop().error(R.drawable.common_google_signin_btn_icon_dark_normal)
-                //.into(holder.img);
         Picasso.get().load(model.getBurl()).into(holder.img);
 
 //Update book item
@@ -151,7 +149,7 @@ public class MainAdapter extends FirebaseRecyclerAdapter<MainModel,MainAdapter.m
 
                     return new myViewHolder(view);
                 }
-
+    // Sub Class to create references of the views in Crad view
                 class myViewHolder extends RecyclerView.ViewHolder {
 
                     ImageView img;

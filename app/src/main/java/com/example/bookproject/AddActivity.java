@@ -20,6 +20,7 @@ import java.util.Map;
 
 public class AddActivity extends AppCompatActivity {
 
+    //Register all edit test and buttons
     EditText name,description,price,burl;
     Button btnAdd,btnBack;
 
@@ -47,11 +48,13 @@ public class AddActivity extends AppCompatActivity {
         btnBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 finish();
             }
         });
     }
 
+    //create a method to inserdata
     private void insertData(){
         Map<String,Object> map = new HashMap<>();
         map.put("name",name.getText().toString());
